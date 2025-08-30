@@ -1,3 +1,6 @@
+# Mehmet Kahya - <https://github.com/mehmetkahya0>
+# 30.08.2025
+
 import requests
 from bs4 import BeautifulSoup
 from newspaper import Article
