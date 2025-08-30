@@ -55,26 +55,40 @@ def scrape_article(url: str):
         return None
 
 def main():
+    # Dataset klasörü
+    os.makedirs("datasets", exist_ok=True)
+    filename = f"datasets/news_{datetime.now().strftime('%Y%m%d')}.jsonl"
+
+    # Mevcut haberleri oku ve URL'leri set'e ekle
+    existing_urls = set()
+    if os.path.exists(filename):
+        with open(filename, "r", encoding="utf-8") as f:
+            for line in f:
+                try:
+                    data = json.loads(line.strip())
+                    existing_urls.add(data["url"])
+                except:
+                    pass
+
     all_articles = []
     for site in NEWS_SITES:
         print(f"⏳ {site} taranıyor...")
         links = get_links(site)
         print(f"🔗 {len(links)} link bulundu.")
-        for link in links[:50]:  # scrape up to 50 articles per site
+        for link in links[:200]:  # scrape up to 200 articles per site
+            if link in existing_urls:
+                continue  # aynı haber varsa atla
             article = scrape_article(link)
             if article:
                 all_articles.append(article)
+                existing_urls.add(article["url"])
 
-    # Dataset klasörü
-    os.makedirs("datasets", exist_ok=True)
-    filename = f"datasets/news_{datetime.now().strftime('%Y%m%d')}.jsonl"
-
-    # JSONL olarak kaydet
-    with open(filename, "w", encoding="utf-8") as f:
+    # JSONL olarak ekle (append mode)
+    with open(filename, "a", encoding="utf-8") as f:
         for item in all_articles:
             f.write(json.dumps(item, ensure_ascii=False) + "\n")
 
-    print(f"✅ {len(all_articles)} haber kaydedildi -> {filename}")
+    print(f"✅ {len(all_articles)} yeni haber eklendi -> {filename}")
 
 if __name__ == "__main__":
     main()
