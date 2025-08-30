@@ -10,7 +10,10 @@ from urllib.parse import urljoin
 # Scrape edilecek siteler (örnek: NTV, CNN Türk)
 NEWS_SITES = [
     "https://www.ntv.com.tr/",
-    "https://www.cnnturk.com/"
+    "https://www.cnnturk.com/",
+    "https://www.haberturk.com/",
+    "https://www.mynet.com/"
+
 ]
 
 def get_links(url: str):
@@ -57,7 +60,7 @@ def main():
         print(f"⏳ {site} taranıyor...")
         links = get_links(site)
         print(f"🔗 {len(links)} link bulundu.")
-        for link in links[:20]:  # test için ilk 20 haber
+        for link in links[:50]:  # scrape up to 50 articles per site
             article = scrape_article(link)
             if article:
                 all_articles.append(article)
